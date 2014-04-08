@@ -211,7 +211,7 @@ int start() {
   bool error=false;
   if(!_initialized) {
     for(int ii=0;ii<_total;ii++) {
-      if(compressBlock(i)==-1) {
+      if(compressBlock(ii)==-1) {
 	error=true;
 	break;
       }
