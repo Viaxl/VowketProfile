@@ -49,8 +49,6 @@ double pipToPrice(int pip) {
 
 int drawProfile(int m[][MAX_BARS], int mN[], int p0, int p1, int blockLow, int blockHigh) {
 
-  debugOutput("       >>>>>>> Entering drawProfile()");
-  
   int r0,g0,b0;
   double rD,gD,bD;
   r0=(_color0&0xff0000)>>16;
@@ -80,17 +78,12 @@ int drawProfile(int m[][MAX_BARS], int mN[], int p0, int p1, int blockLow, int b
       ObjectSet(name, OBJPROP_BACK, true);
     }
 
-  debugOutput("       <--<--< Exiting drawProfile()");
-  debugOutput("Objects count - "+ObjectsTotal());
-  
   return(0);
 }
 
 
 int compressBlock(int index) {
 
-  debugOutput("    >>>>>>> Entering compressBlock()");
-  
   int blockLow=priceToPip(iLow(Symbol(),_intervalPeriod,index));
   int blockHigh=priceToPip(iHigh(Symbol(),_intervalPeriod,index));
   int m[][MAX_BARS],mN[];
@@ -117,40 +110,21 @@ int compressBlock(int index) {
     }
   }
 
-  /*
-    if(index==1 && DEBUG)
-    for(int j=blockHigh-blockLow;j>=0;j--) {
-    string str0="";
-    for(int k=0;k<mN[j];k++)
-    str0=str0+m[j][k]+" ";
-    Comment(str0);
-    }
-  */
-  
   drawProfile(m,mN,p0,p1,blockLow,blockHigh);
 
-  debugOutput("index="+index+"  "+
-	      "block iLow="+iLow(Symbol(),_intervalPeriod,index)+"  "+"\n"+
-	      "_intervalPeriod="+_intervalPeriod+"  "+
-	      "blockLow="+blockLow+"  "+
-	      "blockHigh="+blockHigh+"  "+
-	      "p0="+p0+"  "+
-	      "p1="+p1+"  "
-	      );
-  debugOutput("    <--<--< Exiting compressBlock()");    
-  
   return(0);
 }
     
 
 int init() {
-
+  /*
   FileDelete("VowketProfile.log");
   handle=FileOpen("VowketProfile.log",FILE_CSV|FILE_READ|FILE_WRITE,';');
   if(handle<1) {
     Print("Error: ", GetLastError());
     return(-1);
   }
+  */
   
   if(_interval<0
      || _interval>2
@@ -193,18 +167,11 @@ int init() {
     _digits=2;
   _digitsShift=MathPow(10,_digits);
 
-  debugOutput("_bars="+_bars+"  "+
-	      "_digits="+_digits
-	      );
-  
   return(0);
 }
 
 int start() {
 
-  debugOutput(">>>>>>> Entering start()");
-  debugOutput("_intervalPeriod="+_intervalPeriod);
-  
   if(
      _intervalPeriod<Period()
      )
@@ -228,38 +195,29 @@ int start() {
 	 )
 	break;
       pBar++;
-    debugOutput("pBar="+pBar);
-    debugOutput("Time[pBar]="+Time[pBar]);
-    debugOutput("iTime(..)="+iTime(Symbol(),_intervalPeriod,q));
     }
-
+    
     _indexBar[q]=pBar;
     
-    debugOutput("pBar="+pBar);
-    debugOutput("Time[pBar]="+Time[pBar]);
-    debugOutput("iTime(..)="+iTime(Symbol(),_intervalPeriod,q));
-    debugOutput("q="+q+"  "+"_indexBar[q]="+_indexBar[q]);
-
     pBar++;
     q++;
   }
 
   string str0="_indexBar[]={"+_indexBar[0];
-  for(int ii=1;ii<_total;ii++)
-    str0=str0+","+_indexBar[ii];
+  for(int i=1;i<_total;i++)
+    str0=str0+","+_indexBar[i];
   str0=str0+"}";
-  debugOutput(str0);
 
   bool error=false;
   if(!_initialized) {
-    for(int iii=0;iii<_total;iii++) {
-      if(compressBlock(iii)==-1) {
+    for(int ii=0;ii<_total;ii++) {
+      if(compressBlock(i)==-1) {
 	error=true;
 	break;
       }
     }
     _initialized=1;
-  }  
+  }
   else
     if(compressBlock(0)==-1)
       error=true;
@@ -268,7 +226,6 @@ int start() {
     Print("ERROR: compressBlock() failed miserably.\n");
     return(-1);
   }
-  debugOutput("<--<--< Exiting start()");
 
   FileFlush(handle);
   return(0);
@@ -289,7 +246,6 @@ int deinit() {
   return(0);
   
 }
-
 
 
 int debugOutput(string a) {
